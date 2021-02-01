@@ -4,12 +4,13 @@ void main() {
   runApp(MyApp());
 }
 
+final favourites = Set<AlbumModel>();
+
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Mediathèque',
       theme: ThemeData(
         primarySwatch: Colors.blueGrey,
       ),
@@ -26,6 +27,70 @@ class AlbumWidget extends StatefulWidget {
 class ArtisteWidget extends StatefulWidget {
   @override
   _ArtisteWidgetState createState() => _ArtisteWidgetState();
+}
+
+class FavouriteWidget extends StatefulWidget {
+  @override
+  _FavouriteWidgetState createState() => _FavouriteWidgetState();
+}
+
+class _FavouriteWidgetState extends State<FavouriteWidget> {
+  final TextStyle _biggerFont = const TextStyle(fontSize: 18);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: _buildListView(),
+    );
+  }
+
+  Widget _buildListView() {
+    return ListView.builder(
+      padding: const EdgeInsets.all(16),
+      itemCount: favourites.length *
+          2, //a cause du diviseur qui prends tous les impairs
+      itemBuilder: (BuildContext _context, int i) {
+        if (i.isOdd) {
+          return Divider();
+        }
+        final int index = i ~/ 2;
+
+        return _buildRow(favourites.elementAt(index));
+      },
+    );
+  }
+
+  Widget _buildRow(AlbumModel album) {
+    final alreadySaved = favourites.contains(album);
+    return ListTile(
+      title: Text(
+        album.nom,
+        style: _biggerFont,
+      ),
+      leading: Image.network(album.urlPhoto),
+      subtitle: Text("par " +
+          album.artiste +
+          " le " +
+          album.date.day.toString() +
+          "/" +
+          album.date.month.toString() +
+          "/" +
+          album.date.year.toString()),
+      trailing: Icon(
+        alreadySaved ? Icons.favorite : Icons.favorite_border,
+        color: alreadySaved ? Colors.red : null,
+      ),
+      onTap: () {
+        setState(() {
+          if (alreadySaved) {
+            favourites.remove(album);
+          } else {
+            favourites.add(album);
+          }
+        });
+      },
+    );
+  }
 }
 
 class _AlbumWidgetState extends State<AlbumWidget> {
@@ -54,6 +119,7 @@ class _AlbumWidgetState extends State<AlbumWidget> {
   }
 
   Widget _buildRow(AlbumModel album) {
+    final alreadySaved = favourites.contains(album);
     return ListTile(
       title: Text(
         album.nom,
@@ -68,19 +134,19 @@ class _AlbumWidgetState extends State<AlbumWidget> {
           album.date.month.toString() +
           "/" +
           album.date.year.toString()),
-      /* trailing: Icon(
+      trailing: Icon(
         alreadySaved ? Icons.favorite : Icons.favorite_border,
         color: alreadySaved ? Colors.red : null,
-      ),*/
-      /*    onTap: () {
+      ),
+      onTap: () {
         setState(() {
           if (alreadySaved) {
-            _saved.remove(pair);
+            favourites.remove(album);
           } else {
-            _saved.add(pair);
+            favourites.add(album);
           }
         });
-      },*/
+      },
     );
   }
 }
@@ -112,26 +178,12 @@ class _ArtisteWidgetState extends State<ArtisteWidget> {
 
   Widget _buildRow(ArtisteModel artiste) {
     return ListTile(
-      title: Text(
-        artiste.nom,
-        style: _biggerFont,
-      ),
-      leading: Image.network(artiste.urlPhoto),
-      subtitle: Text(artiste.bio),
-      /* trailing: Icon(
-        alreadySaved ? Icons.favorite : Icons.favorite_border,
-        color: alreadySaved ? Colors.red : null,
-      ),*/
-      /*    onTap: () {
-        setState(() {
-          if (alreadySaved) {
-            _saved.remove(pair);
-          } else {
-            _saved.add(pair);
-          }
-        });
-      },*/
-    );
+        title: Text(
+          artiste.nom,
+          style: _biggerFont,
+        ),
+        leading: Image.network(artiste.urlPhoto),
+        subtitle: Text(artiste.bio));
   }
 }
 
@@ -149,10 +201,7 @@ class _NavBarState extends State<NavBar> {
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static List<Widget> _widgetOptions = <Widget>[
-    Text(
-      'Favoris',
-      style: optionStyle,
-    ),
+    FavouriteWidget(),
     AlbumWidget(),
     ArtisteWidget(),
     Text(
