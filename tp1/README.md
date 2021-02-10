@@ -1,16 +1,13 @@
-# tp1
+# TP1
 
-A new Flutter project.
+Médiathèque de titre musicaux
 
-## Getting Started
+## Description
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+* L'onglet d'accueil affiche les favoris
+* L'onglet titres affiches tous les titres disponibles
+    
+    Il est possible ici d'ajouter/supprimer les titres aux favoris
+* L'onglet artistes affiche les artistes disponibles
+    
+    Il est ici possible d'accéder à chaque artiste pour y voir ses albums disponibles, puis ses titres.
