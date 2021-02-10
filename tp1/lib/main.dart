@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -50,8 +51,16 @@ class _FavouriteWidgetState extends State<FavouriteWidget> {
 
   @override
   Widget build(BuildContext context) {
+    const TextStyle optionStyle =
+        TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
     return Scaffold(
-      body: _buildListView(),
+      body: favourites.length > 0
+          ? _buildListView()
+          : Text(
+              'Aucun titre n\'a été ajouté aux favoris',
+              style: optionStyle,
+              textAlign: TextAlign.center,
+            ),
     );
   }
 
@@ -153,11 +162,11 @@ class _ArtisteWidgetState extends State<ArtisteWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _buildListView(),
+      body: _buildListViewArtiste(),
     );
   }
 
-  Widget _buildListView() {
+  Widget _buildListViewArtiste() {
     return ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount:
@@ -168,25 +177,113 @@ class _ArtisteWidgetState extends State<ArtisteWidget> {
         }
         final int index = i ~/ 2;
 
-        return _buildRow(artistes[index]);
+        return _buildRowArtiste(artistes[index]);
       },
     );
   }
 
-  Widget _buildRow(ArtisteModel artiste) {
+  Widget _buildRowArtiste(ArtisteModel artiste) {
     return ListTile(
-        title: Text(
-          artiste.nom,
-          style: _biggerFont,
-        ),
-        leading: Image.network(artiste.urlPhoto),
-        subtitle: Text(artiste.bio),
-      onTap: ,
+      title: Text(
+        artiste.nom,
+        style: _biggerFont,
+      ),
+      leading: Image.network(artiste.urlPhoto),
+      subtitle: Text(artiste.bio),
+      onTap: () {
+        _pushClickedArtist(artiste);
+      },
     );
+  }
+
+  void _pushClickedArtist(ArtisteModel artiste) {
+    Navigator.of(context)
+        .push(MaterialPageRoute<void>(builder: (BuildContext context) {
+      final tiles = artiste.albums.map((AlbumModel album) {
+        return ListTile(
+          subtitle: new Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                    child: new Text(
+                  album.nom,
+                  style: _biggerFont,
+                  overflow: TextOverflow.ellipsis,
+                )),
+                new Text(
+                  album.date.year.toString(),
+                  style: _biggerFont,
+                )
+              ]),
+          /**/
+          title: Image.network(album.urlPhoto),
+          onTap: () {
+            _pushClickedAlbum(album, artiste);
+          },
+        );
+      });
+      final divided = ListTile.divideTiles(
+        context: context,
+        tiles: tiles,
+      ).toList();
+
+      return Scaffold(
+          appBar: AppBar(
+            title: Text(artiste.nom),
+          ),
+          body: Column(children: [
+            Expanded(
+              child: Image.network(artiste.urlPhoto),
+              flex: 1,
+            ),
+            Expanded(
+              child: Text(artiste.bio),
+              flex: 0,
+            ),
+            Expanded(
+              child: GridView.count(
+                crossAxisSpacing: 10,
+                crossAxisCount: 2,
+                children: divided,
+              ),
+              flex: 2,
+            )
+          ]));
+    }));
+  }
+
+  void _pushClickedAlbum(AlbumModel album, ArtisteModel artiste) {
+    Navigator.of(context)
+        .push(MaterialPageRoute<void>(builder: (BuildContext context) {
+      final tiles = album.titres.map((TitresModel titre) {
+        return ListTile(
+          title: Expanded(
+              child: Text(
+            titre.titre,
+            overflow: TextOverflow.ellipsis,
+            style: _biggerFont,
+          )),
+          leading: Image.network(album.urlPhoto),
+          trailing: Text(
+            titre.duree,
+            style: _biggerFont,
+          ),
+        );
+      });
+      final divided = ListTile.divideTiles(
+        context: context,
+        tiles: tiles,
+      ).toList();
+      return Scaffold(
+        appBar: AppBar(
+          title: Text(album.nom),
+        ),
+        body: ListView(children: divided),
+      );
+    }));
   }
 }
 
-/// This is the stateful widget that the main application instantiates.
 class NavBar extends StatefulWidget {
   NavBar({Key key}) : super(key: key);
 
@@ -194,7 +291,6 @@ class NavBar extends StatefulWidget {
   _NavBarState createState() => _NavBarState();
 }
 
-/// This is the private State class that goes with MyStatefulWidget.
 class _NavBarState extends State<NavBar> {
   int _selectedIndex = 0;
   static const TextStyle optionStyle =
@@ -206,6 +302,7 @@ class _NavBarState extends State<NavBar> {
     Text(
       'Développé par Doryan Leconte & Fatima Maslouhi',
       style: optionStyle,
+      textAlign: TextAlign.center,
     ),
   ];
 
