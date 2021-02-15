@@ -8,7 +8,9 @@ class Exo1 extends Exercice {
   String description = "Display Image";
   @override
   Widget build(BuildContext context) {
-    return MyHomePage(title: title,);
+    return MyHomePage(
+      title: title,
+    );
   }
 
   @override
@@ -49,7 +51,7 @@ class _MyHomePageState extends State<MyHomePage> {
             Expanded(
               child: Transform.rotate(
                 angle: Math.pi / -2,
-                child: Image.network("https://picsum.photos/512/1024"),
+                child: Image.network("https://picsum.photos/1024"),
               ),
             )
           ],

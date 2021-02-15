@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:taquin/Exercice.dart';
+import 'package:taquin/util.dart';
 
 class Tile {
   String imageURL;
@@ -24,8 +25,10 @@ class Tile {
   }
 }
 
-// Tile tile = new Tile(
-//     imageURL: ImageGenerator.getStaticImageURL(0), alignment: Alignment(0, 0));
+Tile tile = new Tile(
+  imageURL: ImageGenerator.getStaticImageURL(0),
+  alignment: Alignment(0, 0),
+);
 
 class Exo4 extends Exercice {
   String title = "Exercice 4";
@@ -69,11 +72,28 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[],
-        ),
+        child: Column(children: [
+          SizedBox(
+              width: 150.0,
+              height: 150.0,
+              child: Container(
+                  margin: EdgeInsets.all(20.0),
+                  child: this.createTileWidgetFrom(tile))),
+          Container(
+              height: 200,
+              child: Image.network(ImageGenerator.getStaticImageURL(0),
+                  fit: BoxFit.cover))
+        ]),
       ),
+    );
+  }
+
+  Widget createTileWidgetFrom(Tile tile) {
+    return InkWell(
+      child: tile.croppedImageTile(),
+      onTap: () {
+        print("tapped on tile");
+      },
     );
   }
 }
