@@ -9,13 +9,7 @@ class Exo2 extends Exercice {
   String description = "Rotate & Scale Image + Animate";
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Exercice 2',
-      theme: ThemeData(
-        primarySwatch: Colors.red,
-      ),
-      home: MyHomePage(title: 'Exercice 2'),
-    );
+    return MyHomePage(title: title,);
   }
 
   @override
@@ -51,6 +45,10 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {

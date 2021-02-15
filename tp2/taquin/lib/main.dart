@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:taquin/Exercice.dart';
-
-import 'Exercices/exo1.dart';
-import 'Exercices/exo2.dart';
+import 'package:taquin/Exercices/exo1.dart';
+import 'package:taquin/Exercices/exo2.dart';
+import 'package:taquin/Exercices/exo4.dart';
 
 void main() {
   runApp(Exo3());
@@ -35,11 +35,17 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   Exercice exo1 = Exo1();
   List<Exercice> exercices = [];
+
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    super.initState();
     exercices.add(new Exo1());
     exercices.add(new Exo2());
+    exercices.add(new Exo4());
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
@@ -59,12 +65,12 @@ class _MyHomePageState extends State<MyHomePage> {
       child: ListTile(
         title: Text(exo.getTitle()),
         subtitle: Text(exo.getDescription()),
-        trailing: FlatButton(
+        trailing: IconButton(
           onPressed: () {
             Navigator.push(
                 context, MaterialPageRoute(builder: (context) => exo));
           },
-          child: Icon(Icons.play_arrow),
+          icon: Icon(Icons.play_arrow),
         ),
       ),
     );

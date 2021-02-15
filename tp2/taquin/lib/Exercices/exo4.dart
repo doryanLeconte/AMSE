@@ -1,14 +1,40 @@
-import 'dart:math' as Math;
-
 import 'package:flutter/material.dart';
 import 'package:taquin/Exercice.dart';
 
-class Exo1 extends Exercice {
-  String title = "Exercice 1";
-  String description = "Display Image";
+class Tile {
+  String imageURL;
+  Alignment alignment;
+
+  Tile({this.imageURL, this.alignment});
+
+  Widget croppedImageTile() {
+    return FittedBox(
+      fit: BoxFit.fill,
+      child: ClipRect(
+        child: Container(
+          child: Align(
+            alignment: this.alignment,
+            widthFactor: 0.3,
+            heightFactor: 0.3,
+            child: Image.network(this.imageURL),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// Tile tile = new Tile(
+//     imageURL: ImageGenerator.getStaticImageURL(0), alignment: Alignment(0, 0));
+
+class Exo4 extends Exercice {
+  String title = "Exercice 4";
+  String description = "Display a Tile as a Cropped Image";
   @override
   Widget build(BuildContext context) {
-    return MyHomePage(title: title,);
+    return MyHomePage(
+      title: title,
+    );
   }
 
   @override
@@ -45,14 +71,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Expanded(
-              child: Transform.rotate(
-                angle: Math.pi / -2,
-                child: Image.network("https://picsum.photos/512/1024"),
-              ),
-            )
-          ],
+          children: <Widget>[],
         ),
       ),
     );
