@@ -2,9 +2,11 @@ import 'dart:async';
 import 'dart:math' as Math;
 
 import 'package:flutter/material.dart';
+import 'package:taquin/Exercice.dart';
 
-class Exo2 extends StatelessWidget {
-  // This widget is the root of your application.
+class Exo2 extends Exercice {
+  String title = "Exercice 2";
+  String description = "Rotate & Scale Image + Animate";
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -14,6 +16,16 @@ class Exo2 extends StatelessWidget {
       ),
       home: MyHomePage(title: 'Exercice 2'),
     );
+  }
+
+  @override
+  String getDescription() {
+    return description;
+  }
+
+  @override
+  String getTitle() {
+    return title;
   }
 }
 

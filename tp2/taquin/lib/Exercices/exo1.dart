@@ -1,18 +1,30 @@
 import 'dart:math' as Math;
 
 import 'package:flutter/material.dart';
+import 'package:taquin/Exercice.dart';
 
-class Exo1 extends StatelessWidget {
-  // This widget is the root of your application.
+class Exo1 extends Exercice {
+  String title = "Exercice 1";
+  String description = "Display Image";
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Exercice 1',
+      title: title,
       theme: ThemeData(
         primarySwatch: Colors.red,
       ),
-      home: MyHomePage(title: 'Exercice 1'),
+      home: MyHomePage(title: title),
     );
+  }
+
+  @override
+  String getDescription() {
+    return description;
+  }
+
+  @override
+  String getTitle() {
+    return title;
   }
 }
 

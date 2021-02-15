@@ -7,7 +7,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:taquin/exo1/exo1.dart';
+
+import 'file:///C:/Users/dorya/Desktop/IMT/AMSE/Flutter/projets/AMSE/tp2/taquin/lib/Exercices/exo1.dart';
 
 void main() {
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
