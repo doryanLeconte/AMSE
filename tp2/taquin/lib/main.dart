@@ -5,6 +5,7 @@ import 'package:taquin/Exercices/exo1.dart';
 import 'package:taquin/Exercices/exo2.dart';
 import 'package:taquin/Exercices/exo4.dart';
 import 'package:taquin/Exercices/exo5.dart';
+import 'package:taquin/Exercices/exo6.dart';
 
 void main() {
   runApp(Exo3());
@@ -44,6 +45,7 @@ class _MyHomePageState extends State<MyHomePage> {
     exercices.add(new Exo2());
     exercices.add(new Exo4());
     exercices.add(new Exo5());
+    exercices.add(new Exo6());
   }
 
   @override
