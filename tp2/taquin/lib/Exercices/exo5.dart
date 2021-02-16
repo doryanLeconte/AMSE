@@ -1,7 +1,41 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:taquin/Exercice.dart';
+
+import '../util.dart';
+
+const int IMAGE_SIZE = 1024;
+
+class Tile {
+  String imageURL;
+  Alignment alignment;
+
+  Tile({this.imageURL, this.alignment});
+
+  Widget croppedImageTile(double gridSize, int tileNb) {
+    double yPos =
+        ((tileNb / (gridSize)).truncate().toDouble() / ((gridSize - 1) / 2) -
+            1);
+    double xPos = ((tileNb % gridSize) / ((gridSize - 1) / 2)) - 1;
+    return FittedBox(
+      fit: BoxFit.fill,
+      child: ClipRect(
+        child: Container(
+          child: Align(
+            alignment: Alignment(xPos, yPos),
+            widthFactor: 1 / gridSize,
+            heightFactor: 1 / gridSize,
+            child: Image.network(this.imageURL),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+Tile tile = new Tile(
+  imageURL: ImageGenerator.getStaticImageURL(IMAGE_SIZE),
+  alignment: Alignment(0, 0),
+);
 
 class Exo5 extends Exercice {
   String title = "Exercice 5";
@@ -35,7 +69,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _gridSize = 3;
-  static const int MAX_SIZE = 10;
+  static const int MAX_GRID_SIZE = 10;
 
   @override
   Widget build(BuildContext context) {
@@ -75,10 +109,10 @@ class _MyHomePageState extends State<MyHomePage> {
                       flex: 6,
                       child: Slider(
                         value: _gridSize.toDouble(),
-                        max: MAX_SIZE.toDouble(),
+                        max: MAX_GRID_SIZE.toDouble(),
                         min: 3,
                         label: _gridSize.toString(),
-                        divisions: MAX_SIZE - 3,
+                        divisions: MAX_GRID_SIZE - 3,
                         onChanged: (double value) {
                           setState(() {
                             _gridSize = value.toInt();
@@ -94,12 +128,19 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  Widget createTileWidgetFrom(Tile tile, int tileNb) {
+    return InkWell(
+      child: tile.croppedImageTile(_gridSize.toDouble(), tileNb),
+      onTap: () {
+        print("tapped on tile");
+      },
+    );
+  }
+
   Widget _buildContainer(int tileNb) {
     return new Container(
-      child: Text("Tile " + (tileNb + 1).toString()),
-      padding: const EdgeInsets.all(8),
-      alignment: Alignment.center,
-      color: Colors.primaries[new Random().nextInt(Colors.primaries.length)],
+      child: createTileWidgetFrom(tile, tileNb),
+      padding: const EdgeInsets.all(2),
     );
   }
 }
