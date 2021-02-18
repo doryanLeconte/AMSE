@@ -40,6 +40,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int _gridSize = defaultGridSize;
   static const int MAX_SIZE = 10;
   TileWidget whiteTile;
+  List<TileWidget> adjacentTiles;
 
   List<Widget> tiles = List<Widget>.generate(defaultGridSize * defaultGridSize,
       (index) => TileWidget(Tile.color(index)));
@@ -50,26 +51,33 @@ class _MyHomePageState extends State<MyHomePage> {
     whiteTile.tile.color = Colors.white;
     whiteTile.tile.text = "Empty ";
 
-    List<TileWidget> adjacentTiles = [];
-
-    if (whiteTile.tile.tileNb % _gridSize != 0)
-      adjacentTiles.add(tiles[whiteTile.tile.tileNb - 1]);
-    if (whiteTile.tile.tileNb % _gridSize != _gridSize - 1)
-      adjacentTiles.add(tiles[whiteTile.tile.tileNb + 1]);
-    if (whiteTile.tile.tileNb + _gridSize < tiles.length)
-      adjacentTiles.add(tiles[whiteTile.tile.tileNb + _gridSize]);
-    if (whiteTile.tile.tileNb - _gridSize >= 0)
-      adjacentTiles.add(tiles[whiteTile.tile.tileNb - _gridSize]);
-
-    adjacentTiles.forEach((element) {
-      element.tile.touchable = true;
-    });
-
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    adjacentTiles = [];
+
+    int whiteTileIndex = getWhiteTileIndex();
+
+    if (whiteTileIndex % _gridSize != 0)
+      adjacentTiles.add(tiles[whiteTileIndex - 1]);
+    if (whiteTileIndex % _gridSize != _gridSize - 1)
+      adjacentTiles.add(tiles[whiteTileIndex + 1]);
+    if (whiteTileIndex + _gridSize < tiles.length)
+      adjacentTiles.add(tiles[whiteTileIndex + _gridSize]);
+    if (whiteTileIndex - _gridSize >= 0)
+      adjacentTiles.add(tiles[whiteTileIndex - _gridSize]);
+
+    adjacentTiles.forEach((element) {
+      element.tile.touchable = true;
+    });
+
+    // tiles.forEach((tile) {
+    //   TileWidget t = tile;
+    //   if (t.tile.touched) print(t.tile.tileNb);
+    // });
+
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
@@ -101,8 +109,60 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  int getWhiteTileIndex() {
+    int whiteTileIndex;
+    int index = 0;
+    tiles.forEach((element) {
+      TileWidget t = element;
+      if (t.tile.text.startsWith("Empty")) whiteTileIndex = index;
+      index++;
+    });
+    return whiteTileIndex;
+  }
+
+  int getTouchedTileIndex() {
+    int touchedTileIndex;
+    int index = 0;
+    tiles.forEach((element) {
+      TileWidget t = element;
+      if (t.tile.touched) touchedTileIndex = index;
+      index++;
+    });
+    return touchedTileIndex;
+  }
+
   Widget _buildContainer(TileWidget tile) {
-    return tile.textBox();
+    if (tile.tile.touchable)
+      return InkWell(
+        child: tile.textBox(),
+        onTap: () {
+          setState(() {
+            tile.tile.touched = true;
+            swapTiles(tile);
+          });
+        },
+      );
+    else
+      return tile.textBox();
+  }
+
+  swapTiles(TileWidget touchedTile) {
+    //print(touchedTile.tile.tileNb.toString());
+    int whiteTileIndex = getWhiteTileIndex();
+    int touchedTileIndex = getTouchedTileIndex();
+    print("touched : " + touchedTileIndex.toString());
+    print("white : " + whiteTileIndex.toString());
+
+    adjacentTiles.forEach((element) {
+      element.tile.touchable = false;
+    });
+
+    TileWidget removedWhiteTile = tiles.removeAt(whiteTileIndex);
+    tiles.insert(whiteTileIndex, touchedTile);
+    tiles.removeAt(touchedTileIndex);
+    tiles.insert(touchedTileIndex, removedWhiteTile);
+
+    touchedTile.tile.touched = false;
   }
 }
 
@@ -111,6 +171,7 @@ class Tile {
   int tileNb;
   String text = "Tile ";
   bool touchable = false;
+  bool touched = false;
 
   Tile(this.color, this.tileNb, this.text);
 
@@ -144,24 +205,21 @@ class TileWidget extends StatelessWidget {
   }
 
   Widget textBox() {
-    return InkWell(
-      child: Container(
-        child: Text(tile.text + (tile.tileNb + 1).toString()),
-        padding: const EdgeInsets.all(8),
-        alignment: Alignment.center,
-        decoration: BoxDecoration(
-          border: tile.touchable
-              ? Border(
-                  top: BorderSide(width: 1.0, color: Colors.red),
-                  left: BorderSide(width: 1.0, color: Colors.red),
-                  right: BorderSide(width: 1.0, color: Colors.red),
-                  bottom: BorderSide(width: 1.0, color: Colors.red),
-                )
-              : null,
-          color: tile.color,
-        ),
+    return Container(
+      child: Text(tile.text + tile.tileNb.toString()),
+      padding: const EdgeInsets.all(8),
+      alignment: Alignment.center,
+      decoration: BoxDecoration(
+        border: tile.touchable
+            ? Border(
+                top: BorderSide(width: 1.0, color: Colors.red),
+                left: BorderSide(width: 1.0, color: Colors.red),
+                right: BorderSide(width: 1.0, color: Colors.red),
+                bottom: BorderSide(width: 1.0, color: Colors.red),
+              )
+            : null,
+        color: tile.color,
       ),
-      onTap: () {},
     );
   }
 }
