@@ -70,24 +70,32 @@ class _MyHomePageState extends State<MyHomePage> {
   int _gridSize = 4;
   bool sizeChanged = true;
   bool shuffled = false;
+  int mouvementsCount = 0;
   int selectedShuffle;
-  int shuffleCount;
+  Map SHUFFLE_TYPES = new Map();
   int BABY_SHUFFLE = 10;
   int SOFT_SHUFFLE;
   int MEDIUM_SHUFFLE;
   int HARD_SHUFFLE;
+  bool won = false;
   static const int MAX_SIZE = 10;
 
   List<TileWidget> adjacentTiles;
   bool started = false;
 
-  List<Widget> tiles;
+  List<TileWidget> tiles;
   @override
   void initState() {
     SOFT_SHUFFLE = _gridSize * _gridSize;
     MEDIUM_SHUFFLE = SOFT_SHUFFLE * 2;
     HARD_SHUFFLE = MEDIUM_SHUFFLE * 2;
-    shuffleCount = 0;
+    SHUFFLE_TYPES["Baby Shuffle"] = BABY_SHUFFLE;
+    SHUFFLE_TYPES["Soft Shuffle"] = SOFT_SHUFFLE;
+    SHUFFLE_TYPES["Medium Shuffle"] = MEDIUM_SHUFFLE;
+    SHUFFLE_TYPES["Hard Shuffle"] = HARD_SHUFFLE;
+    selectedShuffle = BABY_SHUFFLE;
+    mouvementsCount = 0;
+    won = false;
     super.initState();
   }
 
@@ -100,30 +108,35 @@ class _MyHomePageState extends State<MyHomePage> {
             Tile.image(i, ImageGenerator.getStaticImageURL(IMAGE_SIZE)),
             this._gridSize));
       }
-      if (started) {
-        int randomTileNb = random.nextInt(tiles.length);
-        TileWidget t = tiles[randomTileNb];
-        t.tile.isWhite = true;
-        sizeChanged = false;
-      }
     }
     if (started) {
       adjacentTiles = getAdjacentTiles();
       if (!shuffled) {
-        int selectedShuffle = HARD_SHUFFLE;
-
         for (int i = 0; i < selectedShuffle; i++) {
           adjacentTiles = getAdjacentTiles();
           TileWidget selectedTile =
               adjacentTiles[random.nextInt(adjacentTiles.length)];
           selectedTile.tile.touched = true;
-          print(selectedTile.tile.tileNb);
           swapTiles(selectedTile);
           adjacentTiles = getAdjacentTiles();
         }
 
         setState(() {
+          mouvementsCount = 0;
           shuffled = true;
+        });
+      } else {
+        setState(() {
+          won = isWon();
+          if (won) {
+            adjacentTiles.forEach((element) {
+              element.tile.touchable = false;
+            });
+            adjacentTiles = [];
+            tiles[getWhiteTileIndex()].tile.isWhite = false;
+            shuffled = false;
+            started = false;
+          }
         });
       }
     }
@@ -137,62 +150,94 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Center(
         child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Container(
-                child: Expanded(
-                  child: GridView.builder(
-                    itemCount: _gridSize * _gridSize,
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: _gridSize),
-                    primary: false,
-                    padding: const EdgeInsets.all(20),
-                    itemBuilder: (BuildContext _context, int i) {
-                      return _buildContainer(tiles[i]);
-                    },
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Container(
+              child: Expanded(
+                flex: 10,
+                child: GridView.builder(
+                  itemCount: _gridSize * _gridSize,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: _gridSize,
+                    crossAxisSpacing: 1.0,
+                    mainAxisSpacing: 1.0,
                   ),
+                  primary: false,
+                  padding: const EdgeInsets.all(20),
+                  itemBuilder: (BuildContext _context, int i) {
+                    return _buildContainer(tiles[i]);
+                  },
                 ),
               ),
-              started
-                  ? new Container(width: 0, height: 0)
-                  : Row(
-                      children: [
-                        Container(
-                          width: 400,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Expanded(flex: 1, child: Text("Size:")),
-                              Expanded(
-                                flex: 6,
-                                child: Slider(
-                                  value: _gridSize.toDouble(),
-                                  max: MAX_SIZE.toDouble(),
-                                  min: 3,
-                                  label: _gridSize.toString(),
-                                  divisions: MAX_SIZE - 3,
-                                  onChanged: (double value) {
-                                    setState(() {
-                                      sizeChanged = true;
-                                      _gridSize = value.toInt();
-                                    });
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        FloatingActionButton(
-                          onPressed: () {
-                            setState(() {
-                              started = true;
-                            });
-                          },
-                          child: Icon(Icons.play_arrow),
-                        ),
-                      ],
-                    )
-            ]),
+            ),
+            Expanded(
+              flex: 1,
+              child: Text("Mouvements : " + mouvementsCount.toString()),
+            ),
+            Expanded(
+              flex: 1,
+              child: won ? Text("WINNER !") : Text(""),
+            ),
+            DropdownButton(
+                value: selectedShuffle,
+                onChanged: started
+                    ? null
+                    : (int newValue) {
+                        setState(() {
+                          selectedShuffle = newValue;
+                        });
+                      },
+                items:
+                    SHUFFLE_TYPES.entries.map<DropdownMenuItem<int>>((entry) {
+                  return new DropdownMenuItem<int>(
+                    value: entry.value,
+                    child: Text(entry.key),
+                  );
+                }).toList()),
+            ButtonBar(
+              alignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                RaisedButton(
+                  child: Text("-"),
+                  color: Colors.primaries.first,
+                  onPressed: started || _gridSize <= 2
+                      ? null
+                      : () {
+                          setState(() {
+                            sizeChanged = true;
+                            _gridSize--;
+                          });
+                        },
+                ),
+                FloatingActionButton(
+                  child: started ? Icon(Icons.stop) : Icon(Icons.play_arrow),
+                  onPressed: () {
+                    setState(() {
+                      started = !started;
+                      shuffled = false;
+                      won = false;
+                      tiles[random.nextInt(tiles.length)].tile.isWhite = true;
+                      sizeChanged = false;
+                    });
+                  },
+                ),
+                RaisedButton(
+                  child: Text("+"),
+                  color: Colors.primaries.first,
+                  onPressed: started || _gridSize >= 10
+                      ? null
+                      : () {
+                          setState(() {
+                            sizeChanged = true;
+                            _gridSize++;
+                          });
+                        },
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -218,12 +263,19 @@ class _MyHomePageState extends State<MyHomePage> {
     return adjacentTiles;
   }
 
+  bool isWon() {
+    bool won = true;
+    for (int i = 0; i < tiles.length && won; i++) {
+      won = tiles[i].tile.tileNb == i;
+    }
+    return won;
+  }
+
   int getWhiteTileIndex() {
     int whiteTileIndex;
     int index = 0;
     tiles.forEach((element) {
-      TileWidget t = element;
-      if (t.tile.isWhite) whiteTileIndex = index;
+      if (element.tile.isWhite) whiteTileIndex = index;
       index++;
     });
     return whiteTileIndex;
@@ -233,8 +285,7 @@ class _MyHomePageState extends State<MyHomePage> {
     int touchedTileIndex;
     int index = 0;
     tiles.forEach((element) {
-      TileWidget t = element;
-      if (t.tile.touched) touchedTileIndex = index;
+      if (element.tile.touched) touchedTileIndex = index;
       index++;
     });
     return touchedTileIndex;
@@ -246,6 +297,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: tile.croppedImageTile(_gridSize.toDouble()),
         onTap: () {
           setState(() {
+            mouvementsCount++;
             tile.tile.touched = true;
             swapTiles(tile);
           });
