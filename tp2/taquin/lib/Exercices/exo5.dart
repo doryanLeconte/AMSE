@@ -3,7 +3,6 @@ import 'package:taquin/Exercice.dart';
 
 import '../util.dart';
 
-const int IMAGE_SIZE = 1024;
 
 class Tile {
   String imageURL;

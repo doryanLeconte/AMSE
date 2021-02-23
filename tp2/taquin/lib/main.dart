@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:taquin/Exercice.dart';
+import 'package:taquin/Exercices/Exo7/exo7.dart';
 import 'package:taquin/Exercices/exo1.dart';
 import 'package:taquin/Exercices/exo2.dart';
 import 'package:taquin/Exercices/exo4.dart';
@@ -46,6 +47,7 @@ class _MyHomePageState extends State<MyHomePage> {
     exercices.add(new Exo4());
     exercices.add(new Exo5());
     exercices.add(new Exo6());
+    exercices.add(new Exo7());
   }
 
   @override

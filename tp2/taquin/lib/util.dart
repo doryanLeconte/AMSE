@@ -1,3 +1,5 @@
+const int IMAGE_SIZE = 1024;
+
 class ImageGenerator {
   static String getStaticImageURL(int value) {
     if (value == 0)
