@@ -66,6 +66,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int MEDIUM_SHUFFLE;
   int HARD_SHUFFLE;
   bool won = false;
+  List<int> moves = [];
   static const int MAX_SIZE = 10;
 
   List<TileWidget> adjacentTiles;
@@ -75,13 +76,13 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     SOFT_SHUFFLE = _gridSize * _gridSize;
-    MEDIUM_SHUFFLE = SOFT_SHUFFLE * 2;
-    HARD_SHUFFLE = MEDIUM_SHUFFLE * 2;
-    SHUFFLE_TYPES["Baby Shuffle"] = BABY_SHUFFLE;
+    MEDIUM_SHUFFLE = SOFT_SHUFFLE * SOFT_SHUFFLE;
+    HARD_SHUFFLE = MEDIUM_SHUFFLE * MEDIUM_SHUFFLE;
+    SHUFFLE_TYPES["Baby Shuffle (Dev tests)"] = BABY_SHUFFLE;
     SHUFFLE_TYPES["Soft Shuffle"] = SOFT_SHUFFLE;
     SHUFFLE_TYPES["Medium Shuffle"] = MEDIUM_SHUFFLE;
     SHUFFLE_TYPES["Hard Shuffle"] = HARD_SHUFFLE;
-    selectedShuffle = BABY_SHUFFLE;
+    selectedShuffle = MEDIUM_SHUFFLE;
     mouvementsCount = 0;
     won = false;
     super.initState();
@@ -159,6 +160,19 @@ class _MyHomePageState extends State<MyHomePage> {
             Expanded(
               flex: 1,
               child: Text("Mouvements : " + mouvementsCount.toString()),
+            ),
+            RaisedButton(
+              child: Icon(Icons.undo),
+              onPressed: started && moves.length >= 1
+                  ? () {
+                      setState(() {
+                        mouvementsCount++;
+                        tiles[moves.last].tile.touched = true;
+                        swapTiles(tiles[moves.last]);
+                        moves.removeLast();
+                      });
+                    }
+                  : null,
             ),
             Expanded(
               flex: 1,
@@ -284,6 +298,8 @@ class _MyHomePageState extends State<MyHomePage> {
         onTap: () {
           setState(() {
             mouvementsCount++;
+
+            moves.add(getWhiteTileIndex());
             tile.tile.touched = true;
             swapTiles(tile);
           });

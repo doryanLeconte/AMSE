@@ -85,8 +85,8 @@ class _imagePickerState extends State<imagePicker> {
                   MaterialPageRoute<Image>(
                       builder: (context) => new Taquin(
                             new Image.network(
-                              "https://picsum.photos/1024",
-                              key: ValueKey(new Random().nextInt(100)),
+                              "https://picsum.photos/1024?v=" +
+                                  Random().nextInt(100).toString(),
                             ),
                           )),
                 );
