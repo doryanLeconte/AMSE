@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:taquin/Exercice.dart';
-import 'package:taquin/Exercices/Exo7/exo7.dart';
+import 'package:taquin/Exercices/Exo7/imagePicker.dart';
 import 'package:taquin/Exercices/exo1.dart';
 import 'package:taquin/Exercices/exo2.dart';
 import 'package:taquin/Exercices/exo4.dart';

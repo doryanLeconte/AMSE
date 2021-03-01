@@ -1,37 +1,25 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:taquin/Exercice.dart';
 
 import '../../util.dart';
 
 Random random = new Random();
+Image gameImage;
 
-class Exo7 extends Exercice {
-  String title = "Exercice 7";
-  String description = "Jeu de Taquin";
+class Taquin extends StatelessWidget {
+  Taquin(Image image) {
+    gameImage = image;
+  }
+
   @override
   Widget build(BuildContext context) {
-    return MyHomePage(
-      title: title,
-    );
-  }
-
-  @override
-  String getDescription() {
-    return description;
-  }
-
-  @override
-  String getTitle() {
-    return title;
+    return MyHomePage();
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-
-  final String title;
+  MyHomePage({Key key}) : super(key: key);
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -44,10 +32,10 @@ class Tile {
   bool touchable = false;
   bool touched = false;
   bool isWhite = false;
-  String imageURL;
+  Image image;
   Alignment alignment;
 
-  Tile(this.color, this.tileNb, this.text, this.imageURL, this.alignment);
+  Tile(this.color, this.tileNb, this.text, this.alignment, this.image);
 
   Tile.randomColor() {
     this.color = Color.fromARGB(
@@ -59,8 +47,8 @@ class Tile {
     this.tileNb = index;
   }
 
-  Tile.image(int index, String imageURL) {
-    this.imageURL = imageURL;
+  Tile.image(int index, Image image) {
+    this.image = image;
     this.tileNb = index;
     alignment = Alignment(0, 0);
   }
@@ -104,9 +92,7 @@ class _MyHomePageState extends State<MyHomePage> {
     if (sizeChanged) {
       tiles = [];
       for (var i = 0; i < _gridSize * _gridSize; i++) {
-        tiles.add(TileWidget(
-            Tile.image(i, ImageGenerator.getStaticImageURL(IMAGE_SIZE)),
-            this._gridSize));
+        tiles.add(TileWidget(Tile.image(i, gameImage), this._gridSize));
       }
     }
     if (started) {
@@ -142,7 +128,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text("Taquin"),
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () => Navigator.of(context).pop(),
@@ -381,7 +367,7 @@ class TileWidget extends StatelessWidget {
                     height: IMAGE_SIZE.toDouble() / (gridSize * gridSize),
                     width: IMAGE_SIZE.toDouble() / (gridSize * gridSize),
                   )
-                : Image.network(this.tile.imageURL),
+                : this.tile.image,
           ),
         ),
       ),
